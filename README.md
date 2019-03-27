@@ -37,3 +37,9 @@ const listener = new Listener({
   channel: 'myChannel',
 });
 ```
+
+## Sending notifications from Postgres
+
+```sql
+SELECT pg_notify('myChannel', 'My message');
+```
