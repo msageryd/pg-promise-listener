@@ -44,6 +44,12 @@ const listener = new Listener({
 SELECT pg_notify('myChannel', 'My message');
 ```
 
+## Keeping connections alive on AWS
+
+Thank you @boromisp for reasearching and documenting a keep-alive problem (mostly on AWS).
+
+Link to write-up: https://github.com/vitaly-t/pg-promise/issues/593
+
 ## Sending and receiving JSON
 
 It's very convenient to have a single notification trigger connected to multiple tables. It's also convenient to use JSON as the payload format. In order to do this we need:
