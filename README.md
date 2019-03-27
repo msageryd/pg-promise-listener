@@ -2,7 +2,7 @@
 
 Resilient notification listener for pg-promise
 
-The code in this package is mostly copied from Vitaly Tomilov's example code, which can be found here:
+The code in this module is mostly copied from Vitaly Tomilov's example code, which can be found here:
 https://github.com/vitaly-t/pg-promise/wiki/Robust-Listeners
 
 ## Install
