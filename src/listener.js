@@ -7,6 +7,7 @@ const PING_INTERVAL = 1000;
 //Any message with this string will be thrown away.
 //We are using a guid to ensure that we won't clash with an actual messages.
 const PING_MESSAGE = '0a7735a0-93b6-4830-835b-72d0f552381c';
+const SELF_CHECK_MESSAGE = 'f75976d0-dbb6-441f-b62a-264dc689d933';
 
 //Default: retry 10 times, with 5-second intervals
 const DEFAULT_RETRY_COUNT = 10;
@@ -34,8 +35,21 @@ module.exports = DatabaseListener = function({
 
   // global connection for permanent event listeners
   this.connection = null;
+  this.selfCheckPromise = null;
+
+  const selfCheck = () => {
+    this.connection.none('NOTIFY $1~, $2', [this.channel, SELF_CHECK_MESSAGE]).catch(error => {
+    this.selfCheckPromise = new Promise();
+    return this.selfCheckPromise;
+  }
 
   const onNotification = data => {
+    if (data.payload === SELF_CHECK_MESSAGE) {
+      if(this.selfCheckPromise) {
+        this.selfCheckPromise.resolve(true);
+      }
+      return;
+    }
     if (data.payload === PING_MESSAGE) return;
 
     let message = data.payload;
