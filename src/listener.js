@@ -17,7 +17,7 @@ module.exports = DatabaseListener = function({
   onDatabaseNotification, //callback for message handling
   channel, //name of your channel, i.e. the channel name with NOTIFY in your database
   logger = null, //If you don't like console.log, insert your own logger
-  isParseJson = false, //Can your notify-messages be parsed from json?
+  parseJson = false, //Can your notify-messages be parsed from json?
   maxRetryCount = 10,
   retryInterval = 5000,
 }) {
@@ -28,7 +28,7 @@ module.exports = DatabaseListener = function({
   this.db = dbConnection;
   this.channel = channel;
   this.onDatabaseNotification = onDatabaseNotification;
-  this.isParseJson = isParseJson;
+  this.parseJson = parseJson;
   this.maxRetryCount = maxRetryCount;
   this.retryInterval = retryInterval;
 
@@ -39,7 +39,7 @@ module.exports = DatabaseListener = function({
     if (data.payload === PING_MESSAGE) return;
 
     let message = data.payload;
-    if (this.isParseJson) {
+    if (this.parseJson) {
       try {
         message = JSON.parse(data.payload);
       } catch (e) {
