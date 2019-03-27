@@ -8,7 +8,7 @@ https://github.com/vitaly-t/pg-promise/wiki/Robust-Listeners
 ## Install
 
 ```
-npm install github:msageryd/pg-promise-listener --save
+npm install pg-promise-listener --save
 ```
 
 ## Use
@@ -16,7 +16,7 @@ npm install github:msageryd/pg-promise-listener --save
 Example:
 
 ```javascript
-const Listener = require('msageryd/pg-promise-listener');
+const Listener = require('pg-promise-listener');
 const pgp = require('pg-promise')();
 
 const myConnection = pgp({
