@@ -95,7 +95,7 @@ $function$;
 
 ### Creating triggers
 
-Our trigger function can nof be used in triggers on multiple tables
+Our trigger function can now be used in triggers on multiple tables
 
 ```sql
 CREATE TRIGGER ai_au__my_table__notify
