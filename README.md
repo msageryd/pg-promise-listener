@@ -50,6 +50,29 @@ Thank you @boromisp for reasearching and documenting a keep-alive problem (mostl
 
 Link to write-up: https://github.com/vitaly-t/pg-promise/issues/593
 
+## SelfCheck
+
+If you do run your servers on AWS, you have probably already implemented a /health endpoint. In order to discover all kinds of problems pg-promise-listener has a selfCheck method. This method returns a promise, which is only resolved after a complete roundtrip to the Postgres server like this:
+
+1. Tell the database to send a notification with a special message (actually just a guid)
+2. Wait for a message with this guid to arrive from the database server
+3. Resolve the promise with **true** if the notification arrives within `selfCheckTimeout` milliseconds (defaults to 2000ms)
+4. Otherwise resolve the promise with **false**
+
+N.B. There will be no rejection of the promise, so you won't have to bother with `.catch` if you "then" the promise, or `try..catch` if you await the promise.
+
+In your request handler for the /health endpoint, you could do the following:
+
+```javascript
+const isReady = await listener.selfCheck();
+if (isReady) {
+  res.writeHead(200);
+} else {
+  res.writeHead(500);
+}
+return res.end();
+```
+
 ## Sending and receiving JSON
 
 It's very convenient to have a single notification trigger connected to multiple tables. It's also convenient to use JSON as the payload format. In order to do this we need:

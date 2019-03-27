@@ -12,6 +12,7 @@ const SELF_CHECK_MESSAGE = 'f75976d0-dbb6-441f-b62a-264dc689d933';
 //Default: retry 10 times, with 5-second intervals
 const DEFAULT_RETRY_COUNT = 10;
 const DEFAULT_RETRY_INTERVAL = 5000;
+const DEFAULT_SELF_CHECK_TIMEOUT = 20000;
 
 module.exports = DatabaseListener = function({
   dbConnection, //pg-promise-connection to your database
@@ -19,8 +20,9 @@ module.exports = DatabaseListener = function({
   channel, //name of your channel, i.e. the channel name with NOTIFY in your database
   logger = null, //If you don't like console.log, insert your own logger
   parseJson = false, //Can your notify-messages be parsed from json?
-  maxRetryCount = 10,
-  retryInterval = 5000,
+  maxRetryCount = DEFAULT_RETRY_COUNT,
+  retryInterval = DEFAULT_RETRY_INTERVAL,
+  selfCheckTimeout = DEFAULT_SELF_CHECK_TIMEOUT,
 }) {
   if (!dbConnection) throw new Error('DatabaseListener: Missing dbConnection');
   if (!channel) throw new Error('DatabaseListener: Missing channel name');
@@ -32,25 +34,25 @@ module.exports = DatabaseListener = function({
   this.parseJson = parseJson;
   this.maxRetryCount = maxRetryCount;
   this.retryInterval = retryInterval;
+  this.selfCheckTimeout = selfCheckTimeout;
 
   // global connection for permanent event listeners
   this.connection = null;
-  this.selfCheckPromise = null;
 
-  const selfCheck = () => {
-    this.connection.none('NOTIFY $1~, $2', [this.channel, SELF_CHECK_MESSAGE]).catch(error => {
-    this.selfCheckPromise = new Promise();
-    return this.selfCheckPromise;
-  }
+  this.selfCheck = () => {
+    return new Promise((resolve, reject) => {
+      this.selfCheckCallback = () => resolve(true);
+      setTimeout(() => resolve(false), this.selfCheckTimeout);
+      this.connection.none('NOTIFY $1~, $2', [this.channel, SELF_CHECK_MESSAGE]);
+    });
+  };
 
   const onNotification = data => {
-    if (data.payload === SELF_CHECK_MESSAGE) {
-      if(this.selfCheckPromise) {
-        this.selfCheckPromise.resolve(true);
-      }
-      return;
-    }
     if (data.payload === PING_MESSAGE) return;
+
+    if (data.payload === SELF_CHECK_MESSAGE) {
+      return this.selfCheckCallback && this.selfCheckCallback();
+    }
 
     let message = data.payload;
     if (this.parseJson) {
