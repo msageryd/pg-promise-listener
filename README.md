@@ -96,7 +96,7 @@ DECLARE
 BEGIN
     _row = row_to_json(NEW);
 
-    --Try to read filed values from the row
+    --Try to read field values from the row
     --By using json functions we can do this in a "late binding"-fashion without
     --getting errors for non existing fields
     _id = _row ->> 'id';
