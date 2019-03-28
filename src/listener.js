@@ -43,7 +43,9 @@ module.exports = DatabaseListener = function({
     return new Promise((resolve, reject) => {
       this.selfCheckCallback = () => resolve(true);
       setTimeout(() => resolve(false), this.selfCheckTimeout);
-      this.connection.none('NOTIFY $1~, $2', [this.channel, SELF_CHECK_MESSAGE]);
+      this.connection
+        .none('NOTIFY $1~, $2', [this.channel, SELF_CHECK_MESSAGE])
+        .catch(error => resolve(false));
     });
   };
 
