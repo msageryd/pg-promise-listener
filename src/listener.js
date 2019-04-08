@@ -57,16 +57,19 @@ module.exports = DatabaseListener = function({
     }
 
     let message = data.payload;
+    let isMessageOk = true;
     if (this.parseJson) {
       try {
         message = JSON.parse(data.payload);
       } catch (e) {
+        isMessageOk = false;
+        this.logger(data.payload);
         this.logger(e);
         this.logger(data);
       }
     }
 
-    if (this.onDatabaseNotification) {
+    if (isMessageOk && this.onDatabaseNotification) {
       this.onDatabaseNotification(message);
     } else {
       this.logger(message);
