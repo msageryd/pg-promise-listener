@@ -1,6 +1,6 @@
 {
   "name": "pg-promise-listener",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "Resilient notification listener for Postgres. Based on code from pg-promise module",
   "main": "index.js",
   "scripts": {
