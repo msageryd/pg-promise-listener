@@ -1,3 +1,7 @@
+# Deprecated
+
+Any pg-promise client should be using https://github.com/vitaly-t/pg-listener for this now.
+
 # pg-promise-listener
 
 Resilient notification listener for pg-promise
